@@ -26,6 +26,7 @@ class DeviceInteractionTab extends StatelessWidget {
             _DeviceInteractionTab(
           viewModel: DeviceInteractionViewModel(
               deviceId: device.id,
+              connectableStatus: device.connectable,
               connectionStatus: connectionStateUpdate.connectionState,
               deviceConnector: deviceConnector,
               discoverServices: () =>
@@ -39,12 +40,14 @@ class DeviceInteractionTab extends StatelessWidget {
 class DeviceInteractionViewModel extends $DeviceInteractionViewModel {
   const DeviceInteractionViewModel({
     required this.deviceId,
+    required this.connectableStatus,
     required this.connectionStatus,
     required this.deviceConnector,
     required this.discoverServices,
   });
 
   final String deviceId;
+  final Connectable connectableStatus;
   final DeviceConnectionState connectionStatus;
   final BleDeviceConnector deviceConnector;
   @CustomEquality(Ignore())
@@ -107,7 +110,14 @@ class _DeviceInteractionTabState extends State<_DeviceInteractionTab> {
                 Padding(
                   padding: const EdgeInsetsDirectional.only(start: 16.0),
                   child: Text(
-                    "Status: ${widget.viewModel.connectionStatus}",
+                    "Connectable: ${widget.viewModel.connectableStatus}",
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsetsDirectional.only(start: 16.0),
+                  child: Text(
+                    "Connection: ${widget.viewModel.connectionStatus}",
                     style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
                 ),
@@ -172,7 +182,7 @@ class _ServiceDiscoveryListState extends State<_ServiceDiscoveryList> {
     super.initState();
   }
 
-  String _charactisticsSummary(DiscoveredCharacteristic c) {
+  String _characteristicsSummary(DiscoveredCharacteristic c) {
     final props = <String>[];
     if (c.isReadable) {
       props.add("read");
@@ -205,7 +215,7 @@ class _ServiceDiscoveryListState extends State<_ServiceDiscoveryList> {
                       deviceId: deviceId),
                 )),
         title: Text(
-          '${characteristic.characteristicId}\n(${_charactisticsSummary(characteristic)})',
+          '${characteristic.characteristicId}\n(${_characteristicsSummary(characteristic)})',
           style: const TextStyle(
             fontSize: 14,
           ),
